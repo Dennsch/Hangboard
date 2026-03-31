@@ -1,5 +1,5 @@
 # Hangboard
-A timer application for hangboard training that alternates between hang and rest periods with visual feedback.
+A timer application for hangboard training that alternates between hang and rest periods with visual feedback. Built with TypeScript and Electron.
 
 ## Features
 
@@ -14,16 +14,24 @@ A timer application for hangboard training that alternates between hang and rest
 
 ## Requirements
 
-- Python 3.7+
-- tkinter (usually included with Python)
-- Pillow (PIL)
+- Node.js 18+ (with npm)
+- TypeScript 5.3+
+- Electron 28+
 
 ## Installation
 
 Install the required dependencies:
 
 ```bash
-pip install -r requirements.txt
+npm install
+```
+
+## Build
+
+Compile the TypeScript code:
+
+```bash
+npm run build
 ```
 
 ## Usage
@@ -31,7 +39,7 @@ pip install -r requirements.txt
 Run the application:
 
 ```bash
-python hangboard.py
+npm start
 ```
 
 1. Set the number of intervals in the settings section
@@ -52,3 +60,17 @@ Each interval consists of:
 2. **REST** - 20 seconds (clears image)
 
 This sequence repeats for the configured number of intervals.
+
+## Development
+
+For development with automatic recompilation:
+
+```bash
+npm run watch
+```
+
+In another terminal, run:
+
+```bash
+npm run dev
+```
