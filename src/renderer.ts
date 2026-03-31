@@ -1,24 +1,42 @@
 class TrainingTimer {
+  // Fixed protocol
+  private protocol: string[] = [
+    "Half Crimp",
+    "Half Crimp",
+    "Half Crimp",
+    "Half Crimp",
+    "Half Crimp",
+    "Half Crimp",
+    "3 Finger Drag",
+    "3 Finger Drag",
+    "3 Finger Drag",
+    "3 Finger Drag",
+    "3 Finger Drag",
+    "3 Finger Drag",
+    "Index/Middle Finger Drag",
+    "Index/Middle Finger Drag",
+    "Ring/Middle Finger Drag",
+    "Ring/Middle Finger Drag",
+    "Index/Middle Half Crimp",
+    "Index/Middle Half Crimp",
+    "Ring/Middle Half Crimp",
+    "Ring/Middle Half Crimp"
+  ];
+
   private hangDuration: number = 10;
   private restDuration: number = 20;
-  private totalIntervals: number = 5;
-  private intervalNum: number = 0;
+  private totalIntervals: number = 20;
+  private intervalNum: number = 0; // 0-based index for protocol array
+  private currentHangNum: number = 0; // 1-based display number
   private secsRemaining: number = 0;
   private activeFlag: boolean = false;
   private hangFlag: boolean = false;
   private jobId: NodeJS.Timeout | null = null;
-  private gripImageFile: string | null = null;
-  private gripPhotoUrl: string | null = null;
 
   // UI Elements
-  private intervalsInput!: HTMLInputElement;
-  private imageSelectBtn!: HTMLButtonElement;
-  private imageLabelSpan!: HTMLSpanElement;
-  private imageFileInput!: HTMLInputElement;
   private phaseText!: HTMLElement;
   private timerText!: HTMLElement;
   private counterText!: HTMLElement;
-  private gripImage!: HTMLImageElement;
   private startBtn!: HTMLButtonElement;
   private pauseBtn!: HTMLButtonElement;
   private resetBtn!: HTMLButtonElement;
@@ -26,58 +44,21 @@ class TrainingTimer {
   constructor() {
     this.initializeElements();
     this.setupEventListeners();
-    this.createPlaceholder();
   }
 
   private initializeElements(): void {
-    this.intervalsInput = document.getElementById('intervals') as HTMLInputElement;
-    this.imageSelectBtn = document.getElementById('image-select') as HTMLButtonElement;
-    this.imageLabelSpan = document.getElementById('image-label') as HTMLSpanElement;
-    this.imageFileInput = document.getElementById('image-file-input') as HTMLInputElement;
     this.phaseText = document.getElementById('phase-text') as HTMLElement;
     this.timerText = document.getElementById('timer-text') as HTMLElement;
     this.counterText = document.getElementById('counter-text') as HTMLElement;
-    this.gripImage = document.getElementById('grip-image') as HTMLImageElement;
     this.startBtn = document.getElementById('start-btn') as HTMLButtonElement;
     this.pauseBtn = document.getElementById('pause-btn') as HTMLButtonElement;
     this.resetBtn = document.getElementById('reset-btn') as HTMLButtonElement;
   }
 
   private setupEventListeners(): void {
-    this.imageSelectBtn.addEventListener('click', () => this.selectImage());
-    this.imageFileInput.addEventListener('change', (e) => this.handleImageChange(e));
     this.startBtn.addEventListener('click', () => this.begin());
     this.pauseBtn.addEventListener('click', () => this.stop());
     this.resetBtn.addEventListener('click', () => this.reset());
-  }
-
-  private createPlaceholder(): void {
-    // Create placeholder using a data URL
-    const canvas = document.createElement('canvas');
-    canvas.width = 400;
-    canvas.height = 300;
-    const ctx = canvas.getContext('2d');
-    if (ctx) {
-      ctx.fillStyle = 'lightgray';
-      ctx.fillRect(0, 0, 400, 300);
-    }
-    this.gripImage.src = canvas.toDataURL();
-  }
-
-  private selectImage(): void {
-    // Trigger the hidden file input
-    this.imageFileInput.click();
-  }
-
-  private handleImageChange(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      const file = input.files[0];
-      this.gripImageFile = file.name;
-      const fileURL = URL.createObjectURL(file);
-      this.gripPhotoUrl = fileURL;
-      this.imageLabelSpan.textContent = file.name;
-    }
   }
 
   private begin(): void {
@@ -86,9 +67,10 @@ class TrainingTimer {
       this.startBtn.disabled = true;
       this.pauseBtn.disabled = false;
 
-      if (this.intervalNum === 0) {
-        this.totalIntervals = parseInt(this.intervalsInput.value, 10);
-        this.intervalNum = 1;
+      if (this.currentHangNum === 0) {
+        this.totalIntervals = this.protocol.length;
+        this.intervalNum = 0;
+        this.currentHangNum = 1;
         this.hangFlag = true;
         this.secsRemaining = this.hangDuration;
         this.updateCounter();
@@ -114,6 +96,7 @@ class TrainingTimer {
     this.intervalNum = 0;
     this.secsRemaining = 0;
     this.hangFlag = false;
+    this.currentHangNum = 0;
 
     if (this.jobId) {
       clearTimeout(this.jobId);
@@ -124,7 +107,6 @@ class TrainingTimer {
     this.counterText.textContent = 'Interval: 0 / 0';
     this.startBtn.disabled = false;
     this.pauseBtn.disabled = true;
-    this.createPlaceholder();
   }
 
   private tick(): void {
@@ -133,14 +115,21 @@ class TrainingTimer {
     }
 
     if (this.secsRemaining > 0) {
-      this.phaseText.textContent = this.hangFlag ? 'HANG' : 'REST';
-      this.timerText.textContent = this.formatTime(this.secsRemaining);
-
-      if (this.hangFlag && this.gripPhotoUrl) {
-        this.gripImage.src = this.gripPhotoUrl;
+      if (this.hangFlag) {
+        // During hang, show current hang type
+        const currentGrip = this.protocol[this.intervalNum];
+        this.phaseText.textContent = `HANG: ${currentGrip}`;
       } else {
-        this.createPlaceholder();
+        // During rest, show upcoming hang type
+        const nextIndex = this.intervalNum + 1;
+        if (nextIndex < this.protocol.length) {
+          const nextGrip = this.protocol[nextIndex];
+          this.phaseText.textContent = `REST - Next: ${nextGrip}`;
+        } else {
+          this.phaseText.textContent = 'REST - Last one!';
+        }
       }
+      this.timerText.textContent = this.formatTime(this.secsRemaining);
 
       this.secsRemaining -= 1;
       this.jobId = setTimeout(() => this.tick(), 1000);
@@ -155,8 +144,9 @@ class TrainingTimer {
       this.secsRemaining = this.restDuration;
       this.tick();
     } else {
-      if (this.intervalNum < this.totalIntervals) {
-        this.intervalNum += 1;
+      if (this.intervalNum < this.totalIntervals - 1) {
+        this.intervalNum++;
+        this.currentHangNum++;
         this.hangFlag = true;
         this.secsRemaining = this.hangDuration;
         this.updateCounter();
@@ -173,12 +163,11 @@ class TrainingTimer {
     this.timerText.textContent = '00:00';
     this.startBtn.disabled = false;
     this.pauseBtn.disabled = true;
-    this.createPlaceholder();
     alert('Session finished!');
   }
 
   private updateCounter(): void {
-    this.counterText.textContent = `Interval: ${this.intervalNum} / ${this.totalIntervals}`;
+    this.counterText.textContent = `Hang: ${this.currentHangNum} / ${this.totalIntervals}`;
   }
 
   private formatTime(seconds: number): string {

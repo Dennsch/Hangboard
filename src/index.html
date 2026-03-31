@@ -12,16 +12,7 @@
     <fieldset class="settings-frame">
       <legend>Settings</legend>
       <div class="settings-row">
-        <label for="intervals">Intervals:</label>
-        <input type="number" id="intervals" min="1" max="20" value="5">
-      </div>
-      <div class="settings-row">
-        <label for="image-select">Image:</label>
-        <button id="image-select">Select</button>
-        <input type="file" id="image-file-input" accept="image/*" style="display: none;">
-      </div>
-      <div class="settings-row">
-        <span id="image-label" class="image-label">none</span>
+        <span class="info-text">Fixed protocol: 20 hangs across 6 grip types</span>
       </div>
     </fieldset>
 
@@ -30,14 +21,6 @@
       <h1 id="phase-text" class="phase-text">Ready</h1>
       <div id="timer-text" class="timer-text">00:00</div>
       <div id="counter-text" class="counter-text">Interval: 0 / 0</div>
-      
-      <!-- Image Display -->
-      <fieldset class="image-frame">
-        <legend>Finger Position</legend>
-        <div class="image-container">
-          <img id="grip-image" src="" alt="Finger Position">
-        </div>
-      </fieldset>
     </div>
 
     <!-- Button Section -->
