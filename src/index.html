@@ -18,6 +18,7 @@
       <div class="settings-row">
         <label for="image-select">Image:</label>
         <button id="image-select">Select</button>
+        <input type="file" id="image-file-input" accept="image/*" style="display: none;">
       </div>
       <div class="settings-row">
         <span id="image-label" class="image-label">none</span>
@@ -47,6 +48,6 @@
     </div>
   </div>
 
-  <script src="../dist/renderer.js"></script>
+  <script type="module" src="./renderer.ts"></script>
 </body>
 </html>

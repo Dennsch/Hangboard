@@ -1,5 +1,3 @@
-import { dialog } from 'electron';
-
 class TrainingTimer {
   private hangDuration: number = 10;
   private restDuration: number = 20;
@@ -16,6 +14,7 @@ class TrainingTimer {
   private intervalsInput!: HTMLInputElement;
   private imageSelectBtn!: HTMLButtonElement;
   private imageLabelSpan!: HTMLSpanElement;
+  private imageFileInput!: HTMLInputElement;
   private phaseText!: HTMLElement;
   private timerText!: HTMLElement;
   private counterText!: HTMLElement;
@@ -34,6 +33,7 @@ class TrainingTimer {
     this.intervalsInput = document.getElementById('intervals') as HTMLInputElement;
     this.imageSelectBtn = document.getElementById('image-select') as HTMLButtonElement;
     this.imageLabelSpan = document.getElementById('image-label') as HTMLSpanElement;
+    this.imageFileInput = document.getElementById('image-file-input') as HTMLInputElement;
     this.phaseText = document.getElementById('phase-text') as HTMLElement;
     this.timerText = document.getElementById('timer-text') as HTMLElement;
     this.counterText = document.getElementById('counter-text') as HTMLElement;
@@ -45,6 +45,7 @@ class TrainingTimer {
 
   private setupEventListeners(): void {
     this.imageSelectBtn.addEventListener('click', () => this.selectImage());
+    this.imageFileInput.addEventListener('change', (e) => this.handleImageChange(e));
     this.startBtn.addEventListener('click', () => this.begin());
     this.pauseBtn.addEventListener('click', () => this.stop());
     this.resetBtn.addEventListener('click', () => this.reset());
@@ -63,25 +64,19 @@ class TrainingTimer {
     this.gripImage.src = canvas.toDataURL();
   }
 
-  private async selectImage(): Promise<void> {
-    try {
-      const result = await dialog.showOpenDialog({
-        properties: ['openFile'],
-        filters: [
-          { name: 'Images', extensions: ['png', 'jpg', 'jpeg', 'gif', 'bmp'] },
-          { name: 'All Files', extensions: ['*'] }
-        ]
-      });
+  private selectImage(): void {
+    // Trigger the hidden file input
+    this.imageFileInput.click();
+  }
 
-      if (!result.canceled && result.filePaths.length > 0) {
-        const filePath = result.filePaths[0];
-        this.gripImageFile = filePath;
-        this.gripPhotoUrl = filePath;
-        const fileName = filePath.split(/[\\/]/).pop() || '';
-        this.imageLabelSpan.textContent = fileName;
-      }
-    } catch (error) {
-      alert(`Error: ${error}`);
+  private handleImageChange(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      const file = input.files[0];
+      this.gripImageFile = file.name;
+      const fileURL = URL.createObjectURL(file);
+      this.gripPhotoUrl = fileURL;
+      this.imageLabelSpan.textContent = file.name;
     }
   }
 
