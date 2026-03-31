@@ -1,5 +1,5 @@
 # Hangboard
-A timer application for hangboard training that alternates between hang and rest periods with visual feedback. Built with TypeScript and Electron.
+A timer application for hangboard training that alternates between hang and rest periods with visual feedback. Built with TypeScript and Vite, deployable to Vercel.
 
 ## Features
 
@@ -15,8 +15,6 @@ A timer application for hangboard training that alternates between hang and rest
 ## Requirements
 
 - Node.js 18+ (with npm)
-- TypeScript 5.3+
-- Electron 28+
 
 ## Installation
 
@@ -36,17 +34,35 @@ npm run build
 
 ## Usage
 
-Run the application:
+### Local Development
+
+Run the development server:
 
 ```bash
-npm start
+npm run dev
 ```
+
+Then open your browser to `http://localhost:3000`
 
 1. Set the number of intervals in the settings section
 2. (Optional) Load a finger position image to display during hangs
 3. Click "Start" to begin the training session
 4. The timer will alternate between 10-second hangs and 20-second rests
 5. Use "Pause" to temporarily stop, "Reset" to start over
+
+### Production Build
+
+Build for production:
+
+```bash
+npm run build
+```
+
+Preview the production build locally:
+
+```bash
+npm run preview
+```
 
 ## Configuration
 
@@ -61,16 +77,11 @@ Each interval consists of:
 
 This sequence repeats for the configured number of intervals.
 
-## Development
+## Deployment to Vercel
 
-For development with automatic recompilation:
+This application is ready to deploy to Vercel. Simply:
 
-```bash
-npm run watch
-```
-
-In another terminal, run:
-
-```bash
-npm run dev
-```
+1. Push your code to a Git repository (GitHub, GitLab, or Bitbucket)
+2. Import the project in Vercel
+3. Vercel will automatically detect the configuration from `vercel.json`
+4. Your app will be deployed and available at a Vercel URL
