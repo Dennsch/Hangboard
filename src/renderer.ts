@@ -23,6 +23,7 @@ const PROTOCOL: string[] = [
 
 const HANG_DURATION = 10;
 const REST_DURATION = 20;
+const COUNTDOWN_DURATION = 5;
 const RING_CIRCUMFERENCE = 2 * Math.PI * 108; // ~678.6
 
 class HangboardTimer {
@@ -31,6 +32,7 @@ class HangboardTimer {
   private secsRemaining = 0;
   private isRunning = false;
   private isHang = false;
+  private isCountdown = false;
   private jobId: ReturnType<typeof setTimeout> | null = null;
 
   // Elements
@@ -96,8 +98,8 @@ class HangboardTimer {
     this.showPauseIcon();
 
     // First start
-    if (this.hangsCompleted === 0 && !this.isHang) {
-      this.beginHang();
+    if (this.hangsCompleted === 0 && !this.isHang && !this.isCountdown) {
+      this.beginCountdown();
     } else {
       this.tick();
     }
@@ -115,9 +117,24 @@ class HangboardTimer {
     this.hangsCompleted = 0;
     this.secsRemaining = 0;
     this.isHang = false;
+    this.isCountdown = false;
     document.body.className = '';
     this.renderIdle();
     this.resetDots();
+  }
+
+  private beginCountdown() {
+    this.isCountdown = true;
+    this.isHang = false;
+    this.secsRemaining = COUNTDOWN_DURATION;
+    document.body.className = 'countdown-phase';
+    this.phaseLabel.textContent = 'GET READY';
+    this.phaseLabel.className = 'phase-label countdown';
+    this.gripName.textContent = PROTOCOL[0];
+    this.nextGrip.textContent = PROTOCOL[0];
+    this.nextUp.classList.add('visible');
+    this.ringProgress.classList.remove('rest-phase');
+    this.tick();
   }
 
   private beginHang() {
@@ -153,7 +170,10 @@ class HangboardTimer {
   }
 
   private transition() {
-    if (this.isHang) {
+    if (this.isCountdown) {
+      this.isCountdown = false;
+      this.beginHang();
+    } else if (this.isHang) {
       this.hangsCompleted++;
       this.currentHangEl.textContent = String(this.hangsCompleted);
 
@@ -231,10 +251,16 @@ class HangboardTimer {
   }
 
   private updateTimer() {
-    const totalSecs = this.isHang ? HANG_DURATION : REST_DURATION;
+    const totalSecs = this.isCountdown ? COUNTDOWN_DURATION
+                    : this.isHang      ? HANG_DURATION
+                    :                    REST_DURATION;
     const progress = 1 - this.secsRemaining / totalSecs;
     this.setRingProgress(progress);
     this.timerDisplay.textContent = this.fmt(this.secsRemaining);
+
+    if (this.isCountdown) {
+      this.phaseLabel.textContent = 'GET READY';
+    }
   }
 
   private setRingProgress(pct: number) {

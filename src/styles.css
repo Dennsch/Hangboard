@@ -321,6 +321,17 @@ body.rest-phase .count-num { color: var(--rest); }
 body.rest-phase .ctrl-primary { background: var(--rest); }
 body.rest-phase .ctrl-primary:hover { background: #31b4e6; }
 
+body.countdown-phase .ctrl-primary { background: var(--danger); }
+body.countdown-phase .ctrl-primary:hover { background: #e63f34; }
+
+.phase-label.countdown { color: var(--danger); }
+
+body.countdown-phase .ring-progress {
+  stroke: var(--danger);
+  filter: drop-shadow(0 0 8px var(--danger));
+  animation: none;
+}
+
 /* ─── Done state ─────────────────────────────────────────── */
 body.done-state .ring-progress {
   stroke: var(--accent);
