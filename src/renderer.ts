@@ -134,6 +134,7 @@ class HangboardTimer {
     this.nextGrip.textContent = PROTOCOL[0];
     this.nextUp.classList.add('visible');
     this.ringProgress.classList.remove('rest-phase');
+    this.setRingProgress(1);
     this.tick();
   }
 
@@ -197,7 +198,7 @@ class HangboardTimer {
     this.timerDisplay.textContent = '00:00';
     this.gripName.textContent = 'Session done!';
     this.nextUp.classList.remove('visible');
-    this.setRingProgress(1);
+    this.setRingProgress(0);
     this.showPlayIcon();
     this.startBtn.disabled = true;
   }
@@ -218,7 +219,7 @@ class HangboardTimer {
 
   private renderPhase() {
     const totalSecs = this.isHang ? HANG_DURATION : REST_DURATION;
-    const progress = (totalSecs - this.secsRemaining) / totalSecs;
+    const progress = this.secsRemaining / totalSecs;
     this.setRingProgress(progress);
 
     if (this.isHang) {
@@ -254,7 +255,8 @@ class HangboardTimer {
     const totalSecs = this.isCountdown ? COUNTDOWN_DURATION
                     : this.isHang      ? HANG_DURATION
                     :                    REST_DURATION;
-    const progress = 1 - this.secsRemaining / totalSecs;
+    // Ring drains from full (1.0) down to empty (0.0) as time runs out
+    const progress = this.secsRemaining / totalSecs;
     this.setRingProgress(progress);
     this.timerDisplay.textContent = this.fmt(this.secsRemaining);
 
