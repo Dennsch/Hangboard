@@ -134,7 +134,7 @@ class HangboardTimer {
     this.nextGrip.textContent = PROTOCOL[0];
     this.nextUp.classList.add('visible');
     this.ringProgress.classList.remove('rest-phase');
-    this.setRingProgress(1);
+    this.setRingProgress(0);
     this.tick();
   }
 
@@ -159,13 +159,16 @@ class HangboardTimer {
   private tick() {
     if (!this.isRunning) return;
 
-    this.updateTimer();
-
     if (this.secsRemaining <= 0) {
-      this.transition();
+      // Explicitly paint the ring at 0% before transitioning
+      this.setRingProgress(0);
+      this.timerDisplay.textContent = '00:00';
+      // Small delay lets the browser render the empty ring before the next phase snaps it back
+      this.jobId = setTimeout(() => this.transition(), 150);
       return;
     }
 
+    this.updateTimer();
     this.secsRemaining--;
     this.jobId = setTimeout(() => this.tick(), 1000);
   }
@@ -218,9 +221,8 @@ class HangboardTimer {
   }
 
   private renderPhase() {
-    const totalSecs = this.isHang ? HANG_DURATION : REST_DURATION;
-    const progress = this.secsRemaining / totalSecs;
-    this.setRingProgress(progress);
+    // Ring always starts empty at the beginning of a phase
+    this.setRingProgress(0);
 
     if (this.isHang) {
       this.phaseLabel.textContent = 'HANG';
@@ -255,8 +257,9 @@ class HangboardTimer {
     const totalSecs = this.isCountdown ? COUNTDOWN_DURATION
                     : this.isHang      ? HANG_DURATION
                     :                    REST_DURATION;
-    // Ring drains from full (1.0) down to empty (0.0) as time runs out
-    const progress = this.secsRemaining / totalSecs;
+    // Ring fills clockwise: 0% at start, 100% when time is up
+    const elapsed = totalSecs - this.secsRemaining;
+    const progress = elapsed / totalSecs;
     this.setRingProgress(progress);
     this.timerDisplay.textContent = this.fmt(this.secsRemaining);
 
