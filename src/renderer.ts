@@ -160,10 +160,10 @@ class HangboardTimer {
     if (!this.isRunning) return;
 
     if (this.secsRemaining <= 0) {
-      // Explicitly paint the ring at 0% before transitioning
-      this.setRingProgress(0);
+      // Paint the ring fully closed before transitioning to the next phase
+      this.setRingProgress(1);
       this.timerDisplay.textContent = '00:00';
-      // Small delay lets the browser render the empty ring before the next phase snaps it back
+      // Delay lets the browser render the full ring before the next phase snaps it back to empty
       this.jobId = setTimeout(() => this.transition(), 150);
       return;
     }
