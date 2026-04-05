@@ -134,7 +134,7 @@ class HangboardTimer {
     this.nextGrip.textContent = PROTOCOL[0];
     this.nextUp.classList.add('visible');
     this.ringProgress.classList.remove('rest-phase');
-    this.setRingProgress(0);
+    this.snapRingToZero();
     this.tick();
   }
 
@@ -201,7 +201,7 @@ class HangboardTimer {
     this.timerDisplay.textContent = '00:00';
     this.gripName.textContent = 'Session done!';
     this.nextUp.classList.remove('visible');
-    this.setRingProgress(0);
+    this.snapRingToZero();
     this.showPlayIcon();
     this.startBtn.disabled = true;
   }
@@ -215,14 +215,14 @@ class HangboardTimer {
     this.gripName.textContent = '—';
     this.currentHangEl.textContent = '0';
     this.nextUp.classList.remove('visible');
-    this.setRingProgress(0);
+    this.snapRingToZero();
     this.showPlayIcon();
     this.startBtn.disabled = false;
   }
 
   private renderPhase() {
-    // Ring always starts empty at the beginning of a phase
-    this.setRingProgress(0);
+    // Ring always starts empty at the beginning of a phase — instant, no transition
+    this.snapRingToZero();
 
     if (this.isHang) {
       this.phaseLabel.textContent = 'HANG';
@@ -272,6 +272,15 @@ class HangboardTimer {
     // pct 0 = empty ring, 1 = full ring
     const offset = RING_CIRCUMFERENCE * (1 - pct);
     this.ringProgress.style.strokeDashoffset = String(offset);
+  }
+
+  private snapRingToZero() {
+    // Instantly jump to empty without CSS transition, then re-enable it
+    this.ringProgress.style.transition = 'none';
+    this.setRingProgress(0);
+    // Force reflow so the instant change registers before transition is restored
+    void (this.ringProgress as unknown as SVGCircleElement & { getBoundingClientRect: () => void }).getBoundingClientRect();
+    this.ringProgress.style.transition = '';
   }
 
   private updateDot(state: 'active' | 'done') {
