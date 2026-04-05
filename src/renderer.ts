@@ -134,6 +134,7 @@ class HangboardTimer {
     this.nextGrip.textContent = PROTOCOL[0];
     this.nextUp.classList.add('visible');
     this.ringProgress.classList.remove('rest-phase');
+    this.snapRingToZero();
     this.tick();
   }
 
@@ -158,13 +159,16 @@ class HangboardTimer {
   private tick() {
     if (!this.isRunning) return;
 
-    this.updateTimer();
-
     if (this.secsRemaining <= 0) {
-      this.transition();
+      // Paint the ring fully closed before transitioning to the next phase
+      this.setRingProgress(1);
+      this.timerDisplay.textContent = '00:00';
+      // Delay lets the browser render the full ring before the next phase snaps it back to empty
+      this.jobId = setTimeout(() => this.transition(), 150);
       return;
     }
 
+    this.updateTimer();
     this.secsRemaining--;
     this.jobId = setTimeout(() => this.tick(), 1000);
   }
@@ -197,7 +201,7 @@ class HangboardTimer {
     this.timerDisplay.textContent = '00:00';
     this.gripName.textContent = 'Session done!';
     this.nextUp.classList.remove('visible');
-    this.setRingProgress(1);
+    this.snapRingToZero();
     this.showPlayIcon();
     this.startBtn.disabled = true;
   }
@@ -211,15 +215,14 @@ class HangboardTimer {
     this.gripName.textContent = '—';
     this.currentHangEl.textContent = '0';
     this.nextUp.classList.remove('visible');
-    this.setRingProgress(0);
+    this.snapRingToZero();
     this.showPlayIcon();
     this.startBtn.disabled = false;
   }
 
   private renderPhase() {
-    const totalSecs = this.isHang ? HANG_DURATION : REST_DURATION;
-    const progress = (totalSecs - this.secsRemaining) / totalSecs;
-    this.setRingProgress(progress);
+    // Ring always starts empty at the beginning of a phase — instant, no transition
+    this.snapRingToZero();
 
     if (this.isHang) {
       this.phaseLabel.textContent = 'HANG';
@@ -254,7 +257,9 @@ class HangboardTimer {
     const totalSecs = this.isCountdown ? COUNTDOWN_DURATION
                     : this.isHang      ? HANG_DURATION
                     :                    REST_DURATION;
-    const progress = 1 - this.secsRemaining / totalSecs;
+    // Ring fills clockwise: 0% at start, 100% when time is up
+    const elapsed = totalSecs - this.secsRemaining;
+    const progress = elapsed / totalSecs;
     this.setRingProgress(progress);
     this.timerDisplay.textContent = this.fmt(this.secsRemaining);
 
@@ -267,6 +272,15 @@ class HangboardTimer {
     // pct 0 = empty ring, 1 = full ring
     const offset = RING_CIRCUMFERENCE * (1 - pct);
     this.ringProgress.style.strokeDashoffset = String(offset);
+  }
+
+  private snapRingToZero() {
+    // Instantly jump to empty without CSS transition, then re-enable it
+    this.ringProgress.style.transition = 'none';
+    this.setRingProgress(0);
+    // Force reflow so the instant change registers before transition is restored
+    void (this.ringProgress as unknown as SVGCircleElement & { getBoundingClientRect: () => void }).getBoundingClientRect();
+    this.ringProgress.style.transition = '';
   }
 
   private updateDot(state: 'active' | 'done') {
