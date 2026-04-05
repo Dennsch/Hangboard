@@ -158,12 +158,12 @@ class HangboardTimer {
   private tick() {
     if (!this.isRunning) return;
 
-    this.updateTimer();
-
     if (this.secsRemaining <= 0) {
       this.transition();
       return;
     }
+
+    this.updateTimer();
 
     this.secsRemaining--;
     this.jobId = setTimeout(() => this.tick(), 1000);
