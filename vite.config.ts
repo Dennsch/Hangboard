@@ -50,7 +50,6 @@ export default defineConfig({
         orientation: 'portrait',
         icons: [
           {
-          {
             src: '/icons/icon-192.png',
             sizes: '192x192',
             type: 'image/png',
