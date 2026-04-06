@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Hangboard Timer</title>
-  <link rel="manifest" href="manifest.json">
+
   <meta name="theme-color" content="#0d0d0f">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -94,14 +94,6 @@
   </div>
 
   <script type="module" src="./renderer.ts"></script>
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js').catch((error) => {
-          console.error('Service worker registration failed:', error);
-        });
-      });
-    }
-  </script>
+
 </body>
 </html>
