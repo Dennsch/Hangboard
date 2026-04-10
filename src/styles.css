@@ -381,7 +381,6 @@ body.hang-phase .ring-progress {
   .timer-ring-wrap   { width: min(200px, 50vw); }
   .timer-display     { font-size: 56px; }
   .progress-current  { font-size: 32px; }
-  .stat-value        { font-size: 26px; }
   .ctrl-btn          { height: 54px; }
   .app               { gap: 0; }
   .grip-section      { padding: 4px 0 4px; }
