@@ -305,7 +305,7 @@ body {
   align-items: center;
   gap: 14px;
   flex-shrink: 0;
-  padding: 2px 0;
+  padding: 12px 0 24px;
 }
 
 .ctrl-btn {
@@ -354,7 +354,6 @@ body.rest-phase .grip-dot.active  { background: var(--rest); box-shadow: 0 0 8px
 
 body.rest-phase .ctrl-primary     { background: var(--rest); }
 body.rest-phase .ctrl-primary:hover:not(:disabled) { background: #31b4e6; }
-body.rest-phase .stat-icon        { color: var(--rest); }
 
 body.countdown-phase .ctrl-primary { background: var(--danger); }
 body.countdown-phase .ctrl-primary:hover:not(:disabled) { background: #ff2222; }
@@ -382,7 +381,7 @@ body.hang-phase .ring-progress {
   .timer-display     { font-size: 56px; }
   .progress-current  { font-size: 32px; }
   .ctrl-btn          { height: 54px; }
-  .app               { gap: 0; }
+  .app               { gap: 12px; }
   .grip-section      { padding: 4px 0 4px; }
 }
 
@@ -393,5 +392,5 @@ body.hang-phase .ring-progress {
 
 /* ─── Main layout spacing ────────────────────────────────── */
 .app {
-  gap: 10px;
+  gap: 16px;
 }
