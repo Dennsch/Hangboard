@@ -62,7 +62,7 @@ class HangboardTimer {
   private playIcon!:      HTMLElement;
   private pauseIcon!:     HTMLElement;
   // private avgTension!:    HTMLElement;
-  private powerIndex!:    HTMLElement;
+  // private powerIndex!:    HTMLElement;
 
   constructor() {
     this.query();
