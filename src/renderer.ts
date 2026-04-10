@@ -294,13 +294,13 @@ class HangboardTimer {
   private updateMetrics() {
     if (this.completedHangs === 0) return;
 
-    const avg = this.totalHangTime / this.completedHangs;
-    this.avgTension.textContent = avg.toFixed(1) + 's';
+    // // const avg = this.totalHangTime / this.completedHangs;
+    // // this.avgTension.textContent = avg.toFixed(1) + 's';
 
-    // Power index: ratio of actual hang time to total possible hang time (0–100%)
-    const maxHangTime = this.completedHangs * HANG_DURATION;
-    const pwr = Math.round((this.totalHangTime / maxHangTime) * 100);
-    this.powerIndex.textContent = pwr + '%';
+    // // Power index: ratio of actual hang time to total possible hang time (0–100%)
+    // const maxHangTime = this.completedHangs * HANG_DURATION;
+    // const pwr = Math.round((this.totalHangTime / maxHangTime) * 100);
+    // this.powerIndex.textContent = pwr + '%';
   }
 
   private setRingProgress(pct: number) {
