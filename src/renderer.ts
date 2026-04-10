@@ -30,23 +30,17 @@ const TOTAL_SETS         = 4;
 // Ring: r=130, viewBox 300x300 → circumference = 2π×130 ≈ 816.8
 const RING_CIRCUMFERENCE = 2 * Math.PI * 130;
 
-// Grip info per position (level + depth labels)
 const GRIP_LEVEL = "LEVEL 3 EDGE";
 const GRIP_DEPTH = "20MM DEPTH";
 
 class HangboardTimer {
-  private intervalIdx      = 0;      // 0-based index into PROTOCOL
-  private hangsCompleted   = 0;
-  private secsRemaining    = 0;
-  private isRunning        = false;
-  private isHang           = false;
-  private isCountdown      = false;
+  private intervalIdx    = 0;
+  private hangsCompleted = 0;
+  private secsRemaining  = 0;
+  private isRunning      = false;
+  private isHang         = false;
+  private isCountdown    = false;
   private jobId: ReturnType<typeof setTimeout> | null = null;
-
-  // Metrics tracking
-  private hangStartTime    = 0;
-  private totalHangTime    = 0;
-  private completedHangs   = 0;
 
   // Elements
   private phaseLabel!:    HTMLElement;
@@ -61,8 +55,6 @@ class HangboardTimer {
   private startLabel!:    HTMLElement;
   private playIcon!:      HTMLElement;
   private pauseIcon!:     HTMLElement;
-  private avgTension!:    HTMLElement;
-  private powerIndex!:    HTMLElement;
 
   constructor() {
     this.query();
@@ -84,8 +76,6 @@ class HangboardTimer {
     this.startLabel    = document.getElementById('start-label')!;
     this.playIcon      = document.getElementById('play-icon')!;
     this.pauseIcon     = document.getElementById('pause-icon')!;
-    this.avgTension    = document.getElementById('avg-tension')!;
-    this.powerIndex    = document.getElementById('power-index')!;
   }
 
   private buildDots() {
@@ -138,16 +128,14 @@ class HangboardTimer {
     this.secsRemaining  = 0;
     this.isHang         = false;
     this.isCountdown    = false;
-    this.totalHangTime  = 0;
-    this.completedHangs = 0;
     document.body.className = '';
     this.renderIdle();
     this.resetDots();
   }
 
   private beginCountdown() {
-    this.isCountdown  = true;
-    this.isHang       = false;
+    this.isCountdown   = true;
+    this.isHang        = false;
     this.secsRemaining = COUNTDOWN_DURATION;
     document.body.className = 'countdown-phase';
     this.phaseLabel.textContent = 'GET READY';
@@ -161,7 +149,6 @@ class HangboardTimer {
     this.isHang        = true;
     this.isCountdown   = false;
     this.secsRemaining = HANG_DURATION;
-    this.hangStartTime = Date.now();
     document.body.className = 'hang-phase';
     this.updateDot('active');
     this.renderPhase();
@@ -197,14 +184,8 @@ class HangboardTimer {
       this.isCountdown = false;
       this.beginHang();
     } else if (this.isHang) {
-      // Record actual hang time
-      const elapsed = (Date.now() - this.hangStartTime) / 1000;
-      this.totalHangTime += elapsed;
-      this.completedHangs++;
-
       this.hangsCompleted++;
       this.currentHangEl.textContent = String(this.hangsCompleted);
-      this.updateMetrics();
 
       if (this.intervalIdx >= PROTOCOL.length - 1) {
         this.complete();
@@ -228,23 +209,20 @@ class HangboardTimer {
     this.snapRingToZero();
     this.showPlayIcon();
     this.startBtn.disabled = true;
-    this.updateMetrics();
   }
 
   // ─── Render helpers ─────────────────────────────────────────
 
   private renderIdle() {
-    this.phaseLabel.textContent = 'READY';
-    this.phaseLabel.className   = 'phase-label muted';
-    this.timerDisplay.textContent = String(HANG_DURATION).padStart(2, '0');
+    this.phaseLabel.textContent    = 'READY';
+    this.phaseLabel.className      = 'phase-label muted';
+    this.timerDisplay.textContent  = String(HANG_DURATION).padStart(2, '0');
     this.currentHangEl.textContent = '0';
-    this.setStatus.textContent  = 'SET 1 OF 4';
+    this.setStatus.textContent     = 'SET 1 OF 4';
     this.updateGripDisplay(0);
     this.snapRingToZero();
     this.showPlayIcon();
     this.startBtn.disabled = false;
-    this.avgTension.textContent = '—';
-    this.powerIndex.textContent = '—';
   }
 
   private renderPhase() {
@@ -270,9 +248,9 @@ class HangboardTimer {
   }
 
   private updateGripDisplay(idx: number) {
-    this.gripName.textContent    = PROTOCOL[idx] || '—';
-    this.levelBadge.textContent  = GRIP_LEVEL;
-    this.depthBadge.textContent  = GRIP_DEPTH;
+    this.gripName.textContent   = PROTOCOL[idx] || '—';
+    this.levelBadge.textContent = GRIP_LEVEL;
+    this.depthBadge.textContent = GRIP_DEPTH;
   }
 
   private updateTimer() {
@@ -289,18 +267,6 @@ class HangboardTimer {
       this.ringProgress.classList.add('danger-phase');
       this.ringProgress.classList.remove('rest-phase');
     }
-  }
-
-  private updateMetrics() {
-    if (this.completedHangs === 0) return;
-
-    const avg = this.totalHangTime / this.completedHangs;
-    this.avgTension.textContent = avg.toFixed(1) + 's';
-
-    // Power index: ratio of actual hang time to total possible hang time (0–100%)
-    const maxHangTime = this.completedHangs * HANG_DURATION;
-    const pwr = Math.round((this.totalHangTime / maxHangTime) * 100);
-    this.powerIndex.textContent = pwr + '%';
   }
 
   private setRingProgress(pct: number) {
