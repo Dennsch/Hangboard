@@ -390,7 +390,6 @@ body.hang-phase .ring-progress {
 @media (max-height: 600px) {
   .grip-section-label { display: none; }
   .grip-badges        { display: none; }
-  .stats-row          { display: none; }
 }
 
 /* ─── Main layout spacing ────────────────────────────────── */
