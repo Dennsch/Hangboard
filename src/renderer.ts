@@ -61,7 +61,7 @@ class HangboardTimer {
   private startLabel!:    HTMLElement;
   private playIcon!:      HTMLElement;
   private pauseIcon!:     HTMLElement;
-  private avgTension!:    HTMLElement;
+  // private avgTension!:    HTMLElement;
   private powerIndex!:    HTMLElement;
 
   constructor() {
@@ -84,8 +84,8 @@ class HangboardTimer {
     this.startLabel    = document.getElementById('start-label')!;
     this.playIcon      = document.getElementById('play-icon')!;
     this.pauseIcon     = document.getElementById('pause-icon')!;
-    this.avgTension    = document.getElementById('avg-tension')!;
-    this.powerIndex    = document.getElementById('power-index')!;
+    // this.avgTension    = document.getElementById('avg-tension')!;
+    // this.powerIndex    = document.getElementById('power-index')!;
   }
 
   private buildDots() {
@@ -243,8 +243,8 @@ class HangboardTimer {
     this.snapRingToZero();
     this.showPlayIcon();
     this.startBtn.disabled = false;
-    this.avgTension.textContent = '—';
-    this.powerIndex.textContent = '—';
+    // this.avgTension.textContent = '—';
+    // this.powerIndex.textContent = '—';
   }
 
   private renderPhase() {
