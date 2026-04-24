@@ -103,7 +103,7 @@ const App: React.FC = () => {
                     : REST_DURATION;
     const elapsed = totalSecs - secsRemaining;
     const progress = elapsed / totalSecs;
-    setRingProgress(progress-1);
+    setRingProgress(progress);
 
     jobIdRef.current = setTimeout(() => {
       setSecsRemaining(prev => prev - 1);
