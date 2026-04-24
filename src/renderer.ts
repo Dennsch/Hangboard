@@ -41,6 +41,7 @@ class HangboardTimer {
   private isRunning        = false;
   private isHang           = false;
   private isCountdown      = false;
+  private wakeLock: WakeLockSentinel | null = null;
   private jobId: ReturnType<typeof setTimeout> | null = null;
 
   // Metrics tracking
@@ -68,6 +69,7 @@ class HangboardTimer {
     this.query();
     this.buildDots();
     this.bindButtons();
+    this.setupVisibilityHandler();
     this.renderIdle();
   }
 
@@ -105,6 +107,43 @@ class HangboardTimer {
 
   // ─── State machine ──────────────────────────────────────────
 
+  private async requestWakeLock() {
+    // Check if Wake Lock API is supported
+    if ('wakeLock' in navigator) {
+      try {
+        this.wakeLock = await navigator.wakeLock.request('screen');
+        console.log('Wake Lock acquired');
+        
+        // Listen for wake lock release
+        this.wakeLock.addEventListener('release', () => {
+          console.log('Wake Lock released');
+        });
+      } catch (err: any) {
+        console.log(`Wake Lock error: ${err.name}, ${err.message}`);
+      }
+    }
+  }
+
+  private async releaseWakeLock() {
+    if (this.wakeLock) {
+      try {
+        await this.wakeLock.release();
+        this.wakeLock = null;
+      } catch (err) {
+        console.log('Error releasing wake lock:', err);
+      }
+    }
+  }
+
+  private setupVisibilityHandler() {
+    document.addEventListener('visibilitychange', () => {
+      // Re-acquire wake lock when page becomes visible again
+      if (document.visibilityState === 'visible' && this.isRunning) {
+        this.requestWakeLock();
+      }
+    });
+  }
+
   private togglePlay() {
     if (this.isRunning) {
       this.pause();
@@ -117,6 +156,7 @@ class HangboardTimer {
     if (this.isRunning) return;
     this.isRunning = true;
     this.showPauseIcon();
+    this.requestWakeLock();
 
     if (this.hangsCompleted === 0 && !this.isHang && !this.isCountdown) {
       this.beginCountdown();
@@ -128,6 +168,7 @@ class HangboardTimer {
   private pause() {
     this.isRunning = false;
     this.showPlayIcon();
+    this.releaseWakeLock();
     if (this.jobId) clearTimeout(this.jobId);
   }
 
@@ -140,6 +181,7 @@ class HangboardTimer {
     this.isCountdown    = false;
     this.totalHangTime  = 0;
     this.completedHangs = 0;
+    this.releaseWakeLock();
     document.body.className = '';
     this.renderIdle();
     this.resetDots();
@@ -220,6 +262,7 @@ class HangboardTimer {
   private complete() {
     this.isRunning = false;
     this.isHang    = false;
+    this.releaseWakeLock();
     document.body.className = 'done-state';
     this.phaseLabel.textContent = 'COMPLETE';
     this.phaseLabel.className   = 'phase-label';
