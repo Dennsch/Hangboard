@@ -324,7 +324,7 @@ class HangboardTimer {
                     :                    REST_DURATION;
     const elapsed  = totalSecs - this.secsRemaining;
     const progress = elapsed / totalSecs;
-    this.setRingProgress(progress);
+    this.setRingProgress(progress+1);
     this.timerDisplay.textContent = String(this.secsRemaining).padStart(2, '0');
 
     if (this.isCountdown) {
