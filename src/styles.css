@@ -18,6 +18,11 @@
   --rest:         #47c8ff;
   --rest-dim:     rgba(71,200,255,0.12);
   --danger:       #ff4444;
+  --crimp:        #c8f000;      /* half crimp */
+  --crimp-glow:   rgba(200,240,0,0.35);
+  --drag:         #b388ff;      /* 3 finger drag */
+  --drag-dim:     rgba(179,136,255,0.14);
+  --drag-glow:    rgba(179,136,255,0.45);
   --radius-sm:    8px;
   --radius:       16px;
   --radius-lg:    24px;
@@ -98,6 +103,9 @@ body {
   line-height: 1.05;
   margin-bottom: 12px;
 }
+
+.grip-title.crimp { color: var(--crimp); }
+.grip-title.drag  { color: var(--drag); }
 
 .grip-badges {
   display: flex;
@@ -286,12 +294,21 @@ body {
 }
 
 .grip-dot.done {
-  background: var(--accent);
+  background: var(--crimp);
 }
 
 .grip-dot.active {
-  background: var(--accent);
-  box-shadow: 0 0 8px var(--accent-glow);
+  background: var(--crimp);
+  box-shadow: 0 0 8px var(--crimp-glow);
+}
+
+.grip-dot.type-drag.done {
+  background: var(--drag);
+}
+
+.grip-dot.type-drag.active {
+  background: var(--drag);
+  box-shadow: 0 0 8px var(--drag-glow);
 }
 
 .grip-dot.rest-active {
@@ -401,6 +418,14 @@ body.hang-phase .progress-current { color: var(--accent); }
 body.rest-phase .progress-current { color: var(--rest); }
 body.rest-phase .grip-dot.active  { background: var(--rest); box-shadow: 0 0 8px rgba(71,200,255,0.5); }
 
+/* Grip-type colouring during the hang */
+body.hang-phase.grip-drag .phase-label      { color: var(--drag); }
+body.hang-phase.grip-drag .progress-current { color: var(--drag); }
+body.hang-phase.grip-drag .ring-progress {
+  stroke: var(--drag);
+  filter: drop-shadow(0 0 10px var(--drag-glow));
+}
+
 body.rest-phase .ctrl-primary     { background: var(--rest); }
 body.rest-phase .ctrl-primary:hover:not(:disabled) { background: #31b4e6; }
 body.rest-phase .stat-icon        { color: var(--rest); }
@@ -415,13 +440,23 @@ body.done-state .ring-progress {
 
 /* ─── Pulse animation for active hang ───────────────────── */
 @keyframes pulse-ring {
-  0%   { filter: drop-shadow(0 0 8px var(--accent-glow)); }
-  50%  { filter: drop-shadow(0 0 22px var(--accent-glow)); }
-  100% { filter: drop-shadow(0 0 8px var(--accent-glow)); }
+  0%   { filter: drop-shadow(0 0 8px var(--crimp-glow)); }
+  50%  { filter: drop-shadow(0 0 22px var(--crimp-glow)); }
+  100% { filter: drop-shadow(0 0 8px var(--crimp-glow)); }
+}
+
+@keyframes pulse-ring-drag {
+  0%   { filter: drop-shadow(0 0 8px var(--drag-glow)); }
+  50%  { filter: drop-shadow(0 0 22px var(--drag-glow)); }
+  100% { filter: drop-shadow(0 0 8px var(--drag-glow)); }
 }
 
 body.hang-phase .ring-progress {
   animation: pulse-ring 2.5s ease-in-out infinite;
+}
+
+body.hang-phase.grip-drag .ring-progress {
+  animation: pulse-ring-drag 2.5s ease-in-out infinite;
 }
 
 /* ─── Responsive tweaks ──────────────────────────────────── */

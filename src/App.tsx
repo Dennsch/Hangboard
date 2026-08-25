@@ -32,6 +32,9 @@ const RING_CIRCUMFERENCE = 2 * Math.PI * 130;
 const GRIP_LEVEL = "LEVEL 3 EDGE";
 const GRIP_DEPTH = "20MM DEPTH";
 
+const gripTypeOf = (name: string): 'crimp' | 'drag' =>
+  name.toLowerCase().includes('crimp') ? 'crimp' : 'drag';
+
 type Phase = 'idle' | 'countdown' | 'hang' | 'rest' | 'complete';
 
 const App: React.FC = () => {
@@ -206,6 +209,8 @@ const App: React.FC = () => {
   const currentGripName = phase === 'rest' && intervalIdx + 1 < PROTOCOL.length
     ? PROTOCOL[intervalIdx + 1]
     : PROTOCOL[intervalIdx] || 'Half Crimp';
+
+  const gripClass = gripTypeOf(currentGripName);
   
   const displayTime = phase === 'idle' 
     ? String(HANG_DURATION).padStart(2, '0')
@@ -231,11 +236,14 @@ const App: React.FC = () => {
 
   const offset = RING_CIRCUMFERENCE * (1 - ringProgress);
 
-  const bodyClassName = phase === 'countdown' ? 'countdown-phase'
-                      : phase === 'hang' ? 'hang-phase'
-                      : phase === 'rest' ? 'rest-phase'
-                      : phase === 'complete' ? 'done-state'
-                      : '';
+  const bodyClassName = [
+    phase === 'countdown' ? 'countdown-phase'
+    : phase === 'hang' ? 'hang-phase'
+    : phase === 'rest' ? 'rest-phase'
+    : phase === 'complete' ? 'done-state'
+    : '',
+    `grip-${gripClass}`,
+  ].filter(Boolean).join(' ');
 
   // Apply body class
   useEffect(() => {
@@ -252,7 +260,7 @@ const App: React.FC = () => {
       {/* Target Grip Info */}
       <section className="grip-section">
         <div className="grip-section-label">TARGET GRIP POSITION</div>
-        <div className="grip-title">{currentGripName}</div>
+        <div className={`grip-title ${gripClass}`}>{currentGripName}</div>
         <div className="grip-badges">
           <span className="badge badge-accent">{GRIP_LEVEL}</span>
           <span className="badge badge-ghost">{GRIP_DEPTH}</span>
@@ -296,10 +304,10 @@ const App: React.FC = () => {
           </div>
         </div>
         <div className="grip-track">
-          {PROTOCOL.map((_, idx) => (
-            <div 
+          {PROTOCOL.map((name, idx) => (
+            <div
               key={idx}
-              className={`grip-dot ${dotStates[idx]}`}
+              className={`grip-dot type-${gripTypeOf(name)} ${dotStates[idx]}`}
             />
           ))}
         </div>
