@@ -20,9 +20,9 @@
   --danger:       #ff4444;
   --crimp:        #c8f000;      /* half crimp */
   --crimp-glow:   rgba(200,240,0,0.35);
-  --drag:         #b388ff;      /* 3 finger drag */
-  --drag-dim:     rgba(179,136,255,0.14);
-  --drag-glow:    rgba(179,136,255,0.45);
+  --drag:         #ff9500;      /* 3 finger drag */
+  --drag-dim:     rgba(255,149,0,0.14);
+  --drag-glow:    rgba(255,149,0,0.45);
   --radius-sm:    8px;
   --radius:       16px;
   --radius-lg:    24px;
